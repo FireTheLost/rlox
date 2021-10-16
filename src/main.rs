@@ -1,6 +1,7 @@
 use std::env;
 
 mod chunk;
+mod disassembler;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -8,4 +9,6 @@ fn main() {
 
     let mut chunk = chunk::Chunk::new();
     chunk.write_chunk(chunk::OpCode::OpReturn);
+
+    disassembler::disassemble_chunk(&chunk, "Test Chunk");
 }
