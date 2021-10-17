@@ -1,15 +1,15 @@
 pub enum OpCode {
-    OpReturn,
+    OpReturn
 }
 
 pub struct Chunk {
-    pub code: Vec<OpCode>,
+    pub code: Vec<OpCode>
 }
 
 impl Chunk {
     pub fn new() -> Chunk {
         Chunk {
-            code: Vec::new(),
+            code: Vec::new()
         }
     }
 

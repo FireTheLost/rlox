@@ -1,22 +1,22 @@
-use crate::chunk::{self, Chunk};
+use crate::chunk;
 
-pub fn disassemble_chunk(chunk: &Chunk, name: &str) {
+pub fn disassemble_chunk(chunk: &chunk::Chunk, name: &str) {
     println!("== {} ==", name);
 
     let mut offset: usize = 0;
 
     while offset < chunk.code.len() {
-        offset = disassemble_instruction(chunk, offset);
-    } 
+        offset = disassemble_instruction(&chunk, offset);
+    }
 }
 
-fn disassemble_instruction(chunk: &Chunk, offset: usize) -> usize{
-    print!("{} ", offset);
+fn disassemble_instruction(chunk: &chunk::Chunk, offset: usize) -> usize {
+    println!("{}", offset);
 
     let instruction = &chunk.code[offset];
 
     match instruction {
-        chunk::OpCode::OpReturn => simple_instruction("OP_RETURN", offset),
+        chunk::OpCode::OpReturn => simple_instruction("OP_RETURN", offset)
     }
 }
 
