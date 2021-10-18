@@ -17,3 +17,7 @@ impl ValueArray {
         self.values.push(Value::Number(value));
     }
 }
+
+pub fn print_value(value: Value) {
+    println!("{:#?}", value);
+}

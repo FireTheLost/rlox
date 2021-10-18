@@ -1,6 +1,8 @@
 use crate::value;
 
 pub enum OpCode {
+    OpConstant,
+    Constant(value::Value),
     OpReturn
 }
 
@@ -21,7 +23,7 @@ impl Chunk {
         self.code.push(byte);
     }
 
-    fn add_constant(&mut self, value: f64) -> usize {
+    pub fn add_constant(&mut self, value: f64) -> usize {
         self.constants.write_value_array(value);
         self.constants.values.len() - 1
     }
