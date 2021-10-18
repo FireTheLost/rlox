@@ -2,6 +2,7 @@ use std::env;
 
 mod chunk;
 mod disassembler;
+mod value;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
