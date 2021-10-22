@@ -1,19 +1,32 @@
-enum OpCode {
-    OP_RETURN
+use crate::value::ValueArray;
+
+pub enum OpCode {
+    OpReturn,
+    OpConstant(usize)
 }
 
-struct Chunk {
-    code: Vec<u8>
+pub struct Chunk {
+    pub code: Vec<OpCode>,
+    pub constants: ValueArray,
+    pub lines: Vec<u32>
 }
 
-impl Chunk -> Chunk {
-    fn new() {
+impl Chunk{
+    pub fn new() -> Chunk  {
         Chunk {
-            code: Vec::new()
+            code: Vec::new(),
+            constants: ValueArray::new(),
+            lines: Vec::new()
         }
     }
 
-    fn write_chunk(&mut self, byte: u8) {
+    pub fn write_chunk(&mut self, byte: OpCode, line: u32) {
         self.code.push(byte);
+        self.lines.push(line);
+    }
+
+    pub fn add_constant(&mut self, value: f64) -> usize {
+        self.constants.write_value_array(value);
+        self.constants.values.len() - 1
     }
 }
