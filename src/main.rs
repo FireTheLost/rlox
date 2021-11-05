@@ -1,12 +1,16 @@
 use std::env;
 use chunk::{Chunk, OpCode};
 use disassembler::disassemble_chunk;
+use vm::VM;
 
 mod chunk;
 mod disassembler;
 mod value;
+mod vm;
 
 fn main() {
+    let mut vm = VM::new();
+
     let args: Vec<String> = env::args().collect();
     println!("{:?}", args);
 
@@ -18,4 +22,6 @@ fn main() {
     chunk.write_chunk(OpCode::OpReturn, 123);
 
     disassemble_chunk(&chunk, "Test Chunk");
+
+    vm.interpret(chunk);
 }

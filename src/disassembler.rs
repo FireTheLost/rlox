@@ -33,11 +33,11 @@ fn simple_instruction(name: &str, offset: usize) -> usize {
 
 fn constant_instruction(name: &str, chunk: &Chunk, offset: usize, constant: &usize) -> usize {
     print!("{}     {}  '", name, constant);
-    print_value(&chunk.constants.values[offset]);
+    print_value(chunk.constants.values[offset]);
     println!("'");
     offset + 1
 }
 
-fn print_value(value: &f64) {
+pub fn print_value(value: f64) {
     print!("{}", value);
 }
