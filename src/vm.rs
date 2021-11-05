@@ -21,7 +21,7 @@ impl VM {
             chunk: chunk::Chunk::new(),
             ip: 0,
             stack: Vec::new(),
-            debug: false
+            debug: true
         }
     }
 
@@ -36,6 +36,21 @@ impl VM {
 
     pub fn pop(&mut self) -> f64 {
         self.stack.pop().unwrap()
+    }
+
+    fn binary_operator(&mut self, op: OpCode) {
+        let b = self.pop();
+        let a = self.pop();
+
+        let result = match op {
+            OpCode::OpAdd => a + b,
+            OpCode::OpSubtract => a - b,
+            OpCode::OpMultiply => a * b,
+            OpCode::OpDivide => a / b,
+            _ => panic!("Invalid Opcode")
+        };
+
+        self.push(result);
     }
 }
 
@@ -60,6 +75,14 @@ pub fn run(mut vm: VM) -> InterpretResult {
                 let constant = vm.chunk.constants.values[*pos];
                 vm.push(constant);
             },
+
+            OpCode::OpAdd => vm.binary_operator(OpCode::OpAdd),
+
+            OpCode::OpSubtract => vm.binary_operator(OpCode::OpSubtract),
+
+            OpCode::OpMultiply => vm.binary_operator(OpCode::OpMultiply),
+
+            OpCode::OpDivide => vm.binary_operator(OpCode::OpDivide),
 
             OpCode::OpNegate => {
                 let value = vm.pop();

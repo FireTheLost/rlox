@@ -21,9 +21,33 @@ pub fn disassemble_instruction(chunk: &Chunk, offset: usize) -> usize {
     let instruction = &chunk.code[offset];
 
     match instruction {
-        OpCode::OpConstant(constant) => { return constant_instruction("OP_CONSTANT", chunk, offset, constant); }
-        OpCode::OpNegate => { return simple_instruction("OP_NEGATE", offset); }
-        OpCode::OpReturn => { return simple_instruction("OP_RETURN", offset); }
+        OpCode::OpConstant(constant) => {
+            return constant_instruction("OP_CONSTANT", chunk, offset, constant);
+        }
+
+        OpCode::OpAdd => {
+            return simple_instruction("OP_ADD", offset);
+        }
+
+        OpCode::OpSubtract => {
+            return simple_instruction("OP_SUBTRACT", offset);
+        }
+
+        OpCode::OpMultiply => {
+            return simple_instruction("OP_MULTIPLY", offset);
+        }
+
+        OpCode::OpDivide => {
+            return simple_instruction("OP_DIVIDE", offset);
+        }
+
+        OpCode::OpNegate => {
+            return simple_instruction("OP_NEGATE", offset);
+        }
+
+        OpCode::OpReturn => {
+            return simple_instruction("OP_RETURN", offset);
+        }
     }
 }
 
@@ -34,7 +58,7 @@ fn simple_instruction(name: &str, offset: usize) -> usize {
 
 fn constant_instruction(name: &str, chunk: &Chunk, offset: usize, constant: &usize) -> usize {
     print!("{}     {}  '", name, constant);
-    print_value(chunk.constants.values[offset]);
+    print_value(chunk.constants.values[*constant]);
     println!("'");
     offset + 1
 }

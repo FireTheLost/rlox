@@ -2,8 +2,12 @@ use crate::value::ValueArray;
 
 pub enum OpCode {
     OpConstant(usize),
+    OpAdd,
+    OpSubtract,
+    OpMultiply,
+    OpDivide,
     OpNegate,
-    OpReturn,
+    OpReturn
 }
 
 pub struct Chunk {
