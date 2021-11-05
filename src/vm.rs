@@ -62,6 +62,7 @@ pub fn run(mut vm: VM) -> InterpretResult {
             },
 
             OpCode::OpReturn => {
+                println!();
                 print_value(vm.pop());
                 println!();
                 return InterpretResult::Ok;

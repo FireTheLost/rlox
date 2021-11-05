@@ -22,6 +22,7 @@ fn main() {
     chunk.write_chunk(OpCode::OpReturn, 123);
 
     disassemble_chunk(&chunk, "Test Chunk");
+    println!();
 
     vm.interpret(chunk);
 }
