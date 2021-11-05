@@ -42,10 +42,6 @@ pub fn run(mut vm: VM) -> InterpretResult {
                 print_value(constant);
                 print!("\n");
             }
-
-            _ => {
-                println!("Unimplemented Opcode");
-            }
         }
     }
 }

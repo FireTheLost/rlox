@@ -9,7 +9,7 @@ mod value;
 mod vm;
 
 fn main() {
-    let mut vm = VM::new();
+    let vm = VM::new();
 
     let args: Vec<String> = env::args().collect();
     println!("{:?}", args);
