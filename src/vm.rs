@@ -21,7 +21,7 @@ impl VM {
             chunk: chunk::Chunk::new(),
             ip: 0,
             stack: Vec::new(),
-            debug: true
+            debug: false
         }
     }
 
@@ -59,6 +59,11 @@ pub fn run(mut vm: VM) -> InterpretResult {
             OpCode::OpConstant(pos) => {
                 let constant = vm.chunk.constants.values[*pos];
                 vm.push(constant);
+            },
+
+            OpCode::OpNegate => {
+                let value = vm.pop();
+                vm.push(-value);
             },
 
             OpCode::OpReturn => {

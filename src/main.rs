@@ -18,6 +18,7 @@ fn main() {
 
     let constant: usize = chunk.add_constant(1.2);
     chunk.write_chunk(OpCode::OpConstant(constant), 123);
+    chunk.write_chunk(OpCode::OpNegate, 123);
 
     chunk.write_chunk(OpCode::OpReturn, 123);
 
