@@ -167,10 +167,10 @@ fn skip_whitespace(scanner: &mut Scanner) {
         let c = peek(scanner);
 
         match c {
-            ' ' => { advance(scanner); break; },
-            '\r' => { advance(scanner); break; },
-            '\t' => { advance(scanner); break; },
-            '\n' => { scanner.line += 1; advance(scanner); break; },
+            ' ' => { advance(scanner); },
+            '\r' => { advance(scanner); },
+            '\t' => { advance(scanner); },
+            '\n' => { scanner.line += 1; advance(scanner); },
 
             '/' => {
                 if peek_next(scanner) == '/' {
