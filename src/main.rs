@@ -1,39 +1,59 @@
 use std::env;
+use std::io::Write;
+
 use chunk::{Chunk, OpCode};
 use disassembler::disassemble_chunk;
 use vm::VM;
+use vm::interpret;
+use vm::InterpretResult;
 
 mod chunk;
 mod disassembler;
 mod value;
 mod vm;
+mod compiler;
+mod scanner;
 
 fn main() {
-    let vm = VM::new();
-
     let args: Vec<String> = env::args().collect();
     println!("{:?}", args);
+    
+    let vm = VM::new();
 
-    let mut chunk: Chunk = Chunk::new();
+    if args.len() == 1 {
+        repl(&vm);
+    } else if args.len() == 2 {
+        let path = &args[1];
+        run_file(&vm, path);
+    } else {
+        println!("Usage: rlox [script]");
+    }
+}
 
-    let constant: usize = chunk.add_constant(1.2);
-    chunk.write_chunk(OpCode::OpConstant(constant), 123);
+fn repl(vm: &VM) {
+    loop {
+        print!("> ");
+        std::io::stdout().flush().unwrap();
+        let mut input = String::new();
+        std::io::stdin().read_line(&mut input).unwrap();
 
-    let constant = chunk.add_constant(3.4);
-    chunk.write_chunk(OpCode::OpConstant(constant), 123);
+        vm::interpret(vm, &input);
+    }
+}
 
-    chunk.write_chunk(OpCode::OpAdd, 123);
+fn run_file(vm: &VM, path: &str) {
+    let mut buf = String::new();
+    let mut file = std::fs::read_to_string(path).unwrap();
 
-    let constant = chunk.add_constant(5.6);
-    chunk.write_chunk(OpCode::OpConstant(constant), 123);
+    let result: InterpretResult = vm::interpret(vm, &file);
 
-    chunk.write_chunk(OpCode::OpDivide, 123);
-    chunk.write_chunk(OpCode::OpNegate, 123);
-
-    chunk.write_chunk(OpCode::OpReturn, 123);
-
-    disassemble_chunk(&chunk, "Test Chunk");
-    println!();
-
-    vm.interpret(chunk);
+    match result {
+        InterpretResult::Ok => (),
+        InterpretResult::RuntimeError => {
+            eprintln!("Runtime Error");
+        }
+        InterpretResult::CompileError => {
+            eprintln!("Compile Error");
+        }
+    }
 }

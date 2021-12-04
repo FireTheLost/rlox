@@ -1,6 +1,7 @@
 use crate::chunk;
 use crate::chunk::OpCode;
 use crate::disassembler::{print_value, disassemble_instruction};
+use crate::compiler::compile;
 
 pub struct VM {
     chunk: chunk::Chunk,
@@ -15,6 +16,24 @@ pub enum InterpretResult {
     CompileError
 }
 
+impl PartialEq for InterpretResult {
+    fn eq(&self, other: &Self) -> bool {
+        match (self, other) {
+            (InterpretResult::Ok, InterpretResult::Ok) => true,
+            (InterpretResult::RuntimeError, InterpretResult::RuntimeError) => true,
+            (InterpretResult::CompileError, InterpretResult::CompileError) => true,
+            (_, _) => false
+        }
+    }
+}
+
+
+pub fn interpret(vm: &VM, source: &String) -> InterpretResult{
+    compile(vm, source);
+    return InterpretResult::Ok;
+}
+
+
 impl VM {
     pub fn new() -> VM {
         VM {
@@ -23,11 +42,6 @@ impl VM {
             stack: Vec::new(),
             debug: true
         }
-    }
-
-    pub fn interpret(mut self, chunk: chunk::Chunk) -> InterpretResult{
-        self.chunk = chunk;
-        return run(self);
     }
 
     pub fn push(&mut self, value: f64) {
