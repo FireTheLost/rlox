@@ -47,14 +47,17 @@ pub fn init_scanner(vm: &VM, source: &str) -> Scanner {
     }
 }
 
+fn is_alpha(c: char) -> bool {
+    (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_'
+}
+
 fn is_digit(c: char) -> bool {
     c >= '0' && c <= '9'
 }
 
 pub fn scan_token(vm: &VM, scanner: &mut Scanner) -> Token {
-    scanner.start = scanner.current;
-    
     skip_whitespace(scanner);
+    scanner.start = scanner.current;
 
     if is_at_end(&scanner) {
         return make_token(&scanner, TokenType::EOF);
@@ -62,6 +65,9 @@ pub fn scan_token(vm: &VM, scanner: &mut Scanner) -> Token {
 
     let c: char = advance(scanner);
 
+    if is_alpha(c) {
+        return identifier(scanner);
+    }
     if is_digit(c) {
         return number(scanner);
     }
@@ -178,6 +184,62 @@ fn skip_whitespace(scanner: &mut Scanner) {
 
             _ => { return; }
         };
+    }
+}
+
+fn identifier(scanner: &mut Scanner) -> Token {
+    while is_alpha(peek(scanner)) || is_digit(peek(scanner)) {
+        advance(scanner);
+    }
+
+    return make_token(scanner, identifier_type(scanner));
+}
+
+fn identifier_type(scanner: &Scanner) -> TokenType {
+    match scanner.source[scanner.start] {
+        'a' => return check_keyword(scanner, 1, 2, "nd", TokenType::And),
+        'c' => return check_keyword(scanner, 1, 4, "lass", TokenType::Class),
+        'e' => return check_keyword(scanner, 1, 3, "lse", TokenType::Else),
+        'f' => if scanner.current - scanner.start > 1 {
+            match scanner.source[scanner.start + 1] {
+                'a' => return check_keyword(scanner, 2, 3, "lse", TokenType::False),
+                'o' => return check_keyword(scanner, 2, 1, "r", TokenType::For),
+                'u' => return check_keyword(scanner, 2, 1, "n", TokenType::Fun),
+                _ => return TokenType::Identifier,
+            }
+        }
+        'i' => return check_keyword(scanner, 1, 1, "f", TokenType::If),
+        'n' => return check_keyword(scanner, 1, 2, "il", TokenType::Nil),
+        'o' => return check_keyword(scanner, 1, 1, "r", TokenType::Or),
+        'p' => return check_keyword(scanner, 1, 4, "rint", TokenType::Print),
+        'r' => return check_keyword(scanner, 1, 5, "eturn", TokenType::Return),
+        's' => return check_keyword(scanner, 1, 4, "uper", TokenType::Super),
+        't' => if scanner.current - scanner.start > 1 {
+            match scanner.source[scanner.start + 1] {
+                'h' => return check_keyword(scanner, 2, 2, "is", TokenType::This),
+                'r' => return check_keyword(scanner, 2, 2, "ue", TokenType::True),
+                _ => return TokenType::Identifier,
+            }
+        }
+        'v' => return check_keyword(scanner, 1, 2, "ar", TokenType::Var),
+        'w' => return check_keyword(scanner, 1, 4, "hile", TokenType::While),
+
+        _ => ()
+    }
+
+    return TokenType::Identifier;
+}
+
+fn check_keyword(scanner: &Scanner, start: usize, length: usize, rest: &str, ttype: TokenType) -> TokenType {
+    let start_idx = scanner.start + start;
+    let end_idx = start_idx + length;
+
+    let substr : String = scanner.source[start_idx..end_idx].into_iter().collect();
+
+    if (scanner.current - scanner.start == start + length) && substr == rest {
+        ttype    
+    } else {
+        TokenType::Identifier
     }
 }
 
