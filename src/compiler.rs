@@ -24,7 +24,6 @@ pub fn compile(vm: &VM, source: &str) {
             break;
         } else if token.ttype == TokenType::Error {
             eprintln!("Error: {}", token.lexeme);
-            break;
         }
     }
 }

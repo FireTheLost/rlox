@@ -48,6 +48,8 @@ pub fn init_scanner(vm: &VM, source: &str) -> Scanner {
 }
 
 pub fn scan_token(vm: &VM, scanner: &mut Scanner) -> Token {
+    skip_whitespace(scanner);
+
     if is_at_end(&scanner) {
         return make_token(&scanner, TokenType::EOF);
     }
@@ -137,5 +139,46 @@ fn error_token(scanner: &Scanner, message: &str) -> Token {
         length: message.len() as i32,
         line: scanner.line,
         lexeme: message.to_string(),
+    }
+}
+
+fn skip_whitespace(scanner: &mut Scanner) {
+    loop {
+        let c = peek(scanner);
+
+        match c {
+            ' ' => { advance(scanner); break; },
+            '\r' => { advance(scanner); break; },
+            '\t' => { advance(scanner); break; },
+            '\n' => { scanner.line += 1; advance(scanner); break; },
+
+            '/' => {
+                if peek_next(scanner) == '/' {
+                    while peek(scanner) != '\n' && !is_at_end(scanner) {
+                        advance(scanner);
+                    } 
+                } else {
+                    return;
+                }
+            },
+
+            _ => { return; }
+        };
+    }
+}
+
+fn peek(scanner: &Scanner) -> char {
+    if is_at_end(scanner) {
+        return '\0';
+    }
+
+    return scanner.source[scanner.current];
+}
+
+fn peek_next(scanner: &Scanner) -> char {
+    if is_at_end(scanner) {
+        return '\0';
+    } else {
+        return scanner.source[scanner.current + 1];
     }
 }
