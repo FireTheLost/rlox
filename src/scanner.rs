@@ -47,7 +47,13 @@ pub fn init_scanner(vm: &VM, source: &str) -> Scanner {
     }
 }
 
+fn is_digit(c: char) -> bool {
+    c >= '0' && c <= '9'
+}
+
 pub fn scan_token(vm: &VM, scanner: &mut Scanner) -> Token {
+    scanner.start = scanner.current;
+    
     skip_whitespace(scanner);
 
     if is_at_end(&scanner) {
@@ -55,6 +61,10 @@ pub fn scan_token(vm: &VM, scanner: &mut Scanner) -> Token {
     }
 
     let c: char = advance(scanner);
+
+    if is_digit(c) {
+        return number(scanner);
+    }
 
     return match c {
         '(' => make_token(&scanner, TokenType::LeftParen),
@@ -68,6 +78,7 @@ pub fn scan_token(vm: &VM, scanner: &mut Scanner) -> Token {
         '+' => make_token(&scanner, TokenType::Plus),
         '/' => make_token(&scanner, TokenType::Slash),
         '*' => make_token(&scanner, TokenType::Star),
+
         '!' => {
             if match_token(scanner, '=') {
                 make_token(&scanner, TokenType::BangEqual)
@@ -96,6 +107,9 @@ pub fn scan_token(vm: &VM, scanner: &mut Scanner) -> Token {
                 make_token(&scanner, TokenType::Greater)
             }
         },
+
+        '"' => string(scanner),
+
         _ => error_token(&scanner, "Unexpected Character")
     };
 }
@@ -165,6 +179,40 @@ fn skip_whitespace(scanner: &mut Scanner) {
             _ => { return; }
         };
     }
+}
+
+fn number(scanner: &mut Scanner) -> Token {
+    while is_digit(peek(scanner)) {
+        advance(scanner);
+    }
+
+    if peek(scanner) == '.' && is_digit(peek_next(scanner)) {
+        advance(scanner);
+
+        while is_digit(peek(scanner)) {
+            advance(scanner);
+        }
+    }
+
+    return make_token(scanner, TokenType::Number);
+}
+
+fn string(scanner: &mut Scanner) -> Token {
+    while peek(scanner) != '"' && !is_at_end(scanner) {
+        if peek(scanner) == '\n' {
+            scanner.line += 1;
+        }
+
+        advance(scanner);
+    }
+
+    if is_at_end(scanner) {
+        return error_token(scanner, "Unterminated String");
+    }
+
+    advance(scanner);
+
+    return make_token(scanner, TokenType::TokenString);
 }
 
 fn peek(scanner: &Scanner) -> char {
