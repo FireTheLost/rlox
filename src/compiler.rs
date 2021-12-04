@@ -3,12 +3,14 @@ use crate::scanner::{init_scanner, scan_token};
 use crate::scanner::TokenType;
 
 pub fn compile(vm: &VM, source: &str) {
-    let scanner = init_scanner(&vm, source);
+    let mut scanner = init_scanner(&vm, source);
+
+    // println!("{:?}", scanner);
 
     let mut line = -1;
 
     loop {
-        let token = scan_token(vm, &scanner);
+        let token = scan_token(vm, &mut scanner);
         if token.line != line {
             print!("{:04} ", token.line);
             line = token.line;

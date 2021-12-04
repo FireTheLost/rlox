@@ -1,5 +1,6 @@
 use crate::vm::VM;
 
+#[derive(Debug)]
 pub struct Scanner {
     source: Vec<char>,
     start: usize,
@@ -46,16 +47,77 @@ pub fn init_scanner(vm: &VM, source: &str) -> Scanner {
     }
 }
 
-pub fn scan_token(vm: &VM, scanner: &Scanner) -> Token {
+pub fn scan_token(vm: &VM, scanner: &mut Scanner) -> Token {
     if is_at_end(&scanner) {
         return make_token(&scanner, TokenType::EOF);
     }
 
-    return error_token(&scanner, "Unexpected Character");
+    let c: char = advance(scanner);
+
+    return match c {
+        '(' => make_token(&scanner, TokenType::LeftParen),
+        ')' => make_token(&scanner, TokenType::RightParen),
+        '{' => make_token(&scanner, TokenType::LeftBrace),
+        '}' => make_token(&scanner, TokenType::RightBrace),
+        ';' => make_token(&scanner, TokenType::Semicolon),
+        ',' => make_token(&scanner, TokenType::Comma),
+        '.' => make_token(&scanner, TokenType::Dot),
+        '-' => make_token(&scanner, TokenType::Minus),
+        '+' => make_token(&scanner, TokenType::Plus),
+        '/' => make_token(&scanner, TokenType::Slash),
+        '*' => make_token(&scanner, TokenType::Star),
+        '!' => {
+            if match_token(scanner, '=') {
+                make_token(&scanner, TokenType::BangEqual)
+            } else {
+                make_token(&scanner, TokenType::Bang)
+            }
+        },
+        '=' => {
+            if match_token(scanner, '=') {
+                make_token(&scanner, TokenType::EqualEqual)
+            } else {
+                make_token(&scanner, TokenType::Equal)
+            }
+        },
+        '<' => {
+            if match_token(scanner, '=') {
+                make_token(&scanner, TokenType::LessEqual)
+            } else {
+                make_token(&scanner, TokenType::Less)
+            }
+        },
+        '>' => {
+            if match_token(scanner, '=') {
+                make_token(&scanner, TokenType::GreaterEqual)
+            } else {
+                make_token(&scanner, TokenType::Greater)
+            }
+        },
+        _ => error_token(&scanner, "Unexpected Character")
+    };
 }
 
 fn is_at_end(scanner: &Scanner) -> bool {
-    return scanner.current >= scanner.source.len();
+    scanner.current >= scanner.source.len() - 2 || scanner.source[scanner.current] == '\0'
+}
+
+fn advance(scanner: &mut Scanner) -> char {
+    scanner.current += 1;
+    return scanner.source[scanner.current - 1];
+}
+
+fn match_token(scanner: &mut Scanner, expected: char) -> bool {
+    if is_at_end(scanner) {
+        return false;
+    }
+
+    if scanner.source[scanner.current] != expected {
+        return false;
+    }
+
+    scanner.current += 1;
+    return true;
 }
 
 fn make_token(scanner: &Scanner, ttype: TokenType) -> Token {
