@@ -5,7 +5,7 @@ use crate::scanner::TokenType;
 pub fn compile(vm: &VM, source: &str) {
     let mut scanner = init_scanner(&vm, source);
 
-    // println!("{:?}", scanner);
+    println!("{:?}", scanner);
 
     let mut line = -1;
 

@@ -28,7 +28,7 @@ pub enum TokenType {
     Greater, GreaterEqual,
     Less, LessEqual,
     
-    Identifier, TokenString, Number,
+    Identifier, String, Number,
 
     And, Class, Else, False,
     For, Fun, If, Nil, Or,
@@ -121,7 +121,7 @@ pub fn scan_token(vm: &VM, scanner: &mut Scanner) -> Token {
 }
 
 fn is_at_end(scanner: &Scanner) -> bool {
-    scanner.current >= scanner.source.len() - 2 || scanner.source[scanner.current] == '\0'
+    scanner.current >= scanner.source.len() || scanner.source[scanner.current] == '\0'
 }
 
 fn advance(scanner: &mut Scanner) -> char {
@@ -274,7 +274,7 @@ fn string(scanner: &mut Scanner) -> Token {
 
     advance(scanner);
 
-    return make_token(scanner, TokenType::TokenString);
+    return make_token(scanner, TokenType::String);
 }
 
 fn peek(scanner: &Scanner) -> char {

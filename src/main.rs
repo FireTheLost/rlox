@@ -37,6 +37,7 @@ fn repl(vm: &VM) {
         
         let mut input = String::new();
         std::io::stdin().read_line(&mut input).unwrap();
+        input = input[0..input.len() - 2].to_string();
 
         vm::interpret(vm, &input);
     }
