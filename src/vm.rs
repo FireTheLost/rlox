@@ -29,8 +29,18 @@ impl PartialEq for InterpretResult {
 
 
 pub fn interpret(vm: &VM, source: &String) -> InterpretResult{
-    compile(vm, source);
-    return InterpretResult::Ok;
+    let chunk = chunk::Chunk::new();
+
+    if !compile(vm, source, &chunk) {
+        return InterpretResult::CompileError;
+    }
+
+    vm.chunk = chunk;
+    vm.ip = 0;
+
+    let mut result = run(*vm);
+
+    result
 }
 
 

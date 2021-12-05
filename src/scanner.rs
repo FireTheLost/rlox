@@ -2,10 +2,10 @@ use crate::vm::VM;
 
 #[derive(Debug)]
 pub struct Scanner {
-    source: Vec<char>,
-    start: usize,
-    current: usize,
-    line: i32,
+    pub source: Vec<char>,
+    pub start: usize,
+    pub current: usize,
+    pub line: i32,
 }
 
 pub struct Token {
@@ -35,7 +35,7 @@ pub enum TokenType {
     Print, Return, Super, This,
     True, Var, While,
 
-    Error, EOF
+    Start, Error, EOF
 }
 
 pub fn init_scanner(vm: &VM, source: &str) -> Scanner {
